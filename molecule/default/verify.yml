@@ -1,0 +1,57 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+  vars:
+    install_path: /usr/local/bin
+  tasks:
+
+  - name: Get nushell install path
+    ansible.builtin.stat:
+      path: "{{ install_path }}/nu"
+    register: nu_path
+
+  - name: Get /etc/shells contents
+    ansible.builtin.lineinfile:
+      path: /etc/shells
+      line: "{{ install_path }}/nu"
+      state: present
+    check_mode: yes
+    register: shells
+    failed_when: shells is changed
+
+  - name: Assert nushell binary is installed
+    ansible.builtin.assert:
+      that: nu_path.stat.exists
+
+  - name: Assert nushell is set as default shell of the user
+    block:
+      - name: Get current user
+        ansible.builtin.user:
+          name: "{{ ansible_user_id }}"
+          state: present
+        register: user
+      - name: Check shell of current user
+        ansible.builtin.assert:
+          that: user.shell == "{{ install_path }}/nu"
+
+  - name: Assert all plugins have been registered
+    block:
+      - name: Get list of registered plugins
+        ansible.builtin.shell: # noqa command-instead-of-shell
+          cmd: "version|get installed_plugins|split row ','|str trim|to json"
+          executable: "{{ install_path }}/nu"
+        register: installed_plugins
+        changed_when: false
+      - name: Set plugin list as fact
+        ansible.builtin.set_fact:
+          plugins_list: "{{ installed_plugins.stdout | from_json | list }}"
+      - name: Verify all plugins were successfully registered
+        ansible.builtin.assert:
+          that:
+            - "'{{ item }}' in plugins_list"
+        with_items:
+          - "gstat"
+          - "query"
+          - "inc"

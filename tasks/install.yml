@@ -1,0 +1,135 @@
+---
+#tasks file for ansible-role-nushell
+- name: Call GitHub api to obtain download urls
+  ansible.builtin.uri:
+    url: "{{ releases_endpoint }}/{{'latest' if nushell_version is not defined or nushell_version == 'latest' else 'tags/'+nushell_version}}"
+  register: api_response
+  run_once: true
+
+- name: Set download url as fact
+  ansible.builtin.set_fact:
+    download_url: >
+      {{
+      api_response.json
+      |json_query('assets[].browser_download_url')
+      |select('match', '^.*{0}.*$'.format(ansible_system|lower))
+      |select('match', '^.*({0}|nu_).*$'.format(ansible_architecture))
+      |select('match', '^.*({0}|nu_).*$'.format('musl' if (ansible_distribution == 'Alpine') else 'gnu'))
+      |first
+      }}
+
+- name: create temporary directory
+  ansible.builtin.tempfile:
+    path: /tmp
+    state: directory
+  register: tmp_path
+
+- name: Ensure nushell config directory exists
+  ansible.builtin.file:
+    name: "{{ nushell_path }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0700
+
+- name: Ensure nushell plugins directory exists
+  ansible.builtin.file:
+    name: "{{ nushell_path }}/plugins"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0700
+
+- name: Extract package
+  ansible.builtin.unarchive:
+    src: "{{ download_url }}"
+    dest: "{{ tmp_path.path }}"
+    remote_src: yes
+    list_files: true
+
+- name: Find nushell binary in the archive
+  ansible.builtin.find:
+    paths: "{{ tmp_path.path }}"
+    recurse: yes
+    patterns: '^nu$'
+    use_regex: True
+  register: binary
+
+- name: Find nushell plugins in the archive
+  ansible.builtin.find:
+    paths: "{{ tmp_path.path }}"
+    recurse: yes
+    patterns: '^nu_plugin.*(?<!example)$'
+    use_regex: True
+  register: plugins
+
+- name: Move nushell binary to proper location
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ install_path }}"
+    owner: root
+    group: root
+    mode: 0751
+    remote_src: yes
+  with_items: "{{ binary.files }}"
+
+- name: Move nushell plugins to proper location
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ nushell_path }}/plugins"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: 0751
+    remote_src: yes
+  with_items: "{{ plugins.files }}"
+
+- name: Add nushell to /etc/shells
+  become: true
+  ansible.builtin.lineinfile:
+    state: present
+    path: /etc/shells
+    line: "{{ install_path }}/nu"
+
+- name: Set user shell to nushell
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ install_path }}/nu"
+
+- name: stat existing env file
+  ansible.builtin.stat:
+    path: "{{ nushell_path }}/env.nu"
+  register: nushell_env
+
+- name: stat existing config file
+  ansible.builtin.stat:
+    path: "{{ nushell_path }}/config.nu"
+  register: nushell_config
+
+- name: Copy preset config file to user directory
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/nushell/nushell/main/docs/sample_config/default_env.nu
+    dest: "{{ nushell_path }}/env.nu"
+    mode: 0750
+  when: not nushell_env.stat.exists
+
+- name: Copy preset config file to user directory
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/nushell/nushell/main/docs/sample_config/default_config.nu
+    dest: "{{ nushell_path }}/config.nu"
+    mode: 0750
+  when: not nushell_config.stat.exists
+
+- name: Stat plugins directory
+  ansible.builtin.find:
+    paths: "{{ nushell_path }}/plugins/"
+  register: plugins
+
+- name: Register all plugins
+  ansible.builtin.shell:  # noqa command-instead-of-shell
+    cmd: "register -e json {{ item.path }}"
+    executable: "{{ install_path }}/nu"
+  with_items: "{{ plugins.files }}"
+  changed_when: false

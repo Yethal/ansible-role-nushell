@@ -1,0 +1,11 @@
+- name: nushell
+  hosts: all
+  become: false
+  tasks:
+    - name: Install
+      import_tasks: tasks/main.yml
+  vars:
+    install_path: /usr/local/bin
+    nushell_path: "{{ ansible_env.HOME }}/.config/nushell"
+    nushell_version: latest
+    releases_endpoint: https://api.github.com/repos/nushell/nushell/releases

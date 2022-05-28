@@ -1,0 +1,6 @@
+---
+# defaults file for ansible-role-nushell
+install_path: /usr/local/bin
+nushell_path: "{{ ansible_env.HOME }}/.config/nushell"
+nushell_version: latest
+releases_endpoint: https://api.github.com/repos/nushell/nushell/releases

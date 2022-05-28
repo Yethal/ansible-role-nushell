@@ -1,0 +1,12 @@
+- name: Check if nushell is already installed
+  ansible.builtin.stat:
+    path: "{{ install_path }}/nu"
+  register: nushell_status
+
+- name: Update nushell
+  ansible.builtin.import_tasks: update.yml
+  when: nushell_status.stat.exists
+
+- name: Install nushell
+  ansible.builtin.import_tasks: install.yml
+  when: not nushell_status.stat.exists

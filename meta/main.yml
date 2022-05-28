@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: nushell
+  author: yethal
+  description: A new type of shell
+  license: "license (BSD, MIT)"
+  min_ansible_version: "2.1"
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: macOS
+      versions:
+      - all
+  galaxy_tags:
+    - nushell
+    - automation
+    - shell
+    - system

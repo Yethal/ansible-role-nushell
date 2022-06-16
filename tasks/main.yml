@@ -5,9 +5,9 @@
   register: nushell_status
 
 - name: Update nushell
-  ansible.builtin.import_tasks: update.yml
+  ansible.builtin.include_tasks: update.yml
   when: nushell_status.stat.exists
 
 - name: Install nushell
-  ansible.builtin.import_tasks: install.yml
+  ansible.builtin.include_tasks: install.yml
   when: not nushell_status.stat.exists

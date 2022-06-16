@@ -20,4 +20,4 @@ verifier:
   name: ansible
 lint: |
   yamllint .
-  ansible-lint
+  ansible-lint .

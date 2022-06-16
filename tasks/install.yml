@@ -1,8 +1,7 @@
 ---
-#tasks file for ansible-role-nushell
 - name: Call GitHub api to obtain download urls
   ansible.builtin.uri:
-    url: "{{ releases_endpoint }}/{{'latest' if nushell_version is not defined or nushell_version == 'latest' else 'tags/'+nushell_version}}"
+    url: "{{ releases_endpoint }}/{{ 'latest' if nushell_version is not defined or nushell_version == 'latest' else 'tags/'+nushell_version }}"
   register: api_response
   run_once: true
 

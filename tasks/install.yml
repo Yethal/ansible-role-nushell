@@ -10,11 +10,11 @@
     download_url: >
       {{
       api_response.json
-      |json_query('assets[].browser_download_url')
-      |select('match', '^.*{0}.*$'.format(ansible_system|lower))
-      |select('match', '^.*({0}|nu_).*$'.format(ansible_architecture))
-      |select('match', '^.*({0}|nu_).*$'.format('musl' if (ansible_distribution == 'Alpine') else 'gnu'))
-      |first
+      | json_query('assets[].browser_download_url')
+      | select( 'match', '^.*{0}.*$'.format( ansible_system | lower ) )
+      | select( 'match', '^.*({0}|nu_).*$'.format( ansible_architecture ) )
+      | select( 'match', '^.*({0}|nu_).*$'.format( 'musl' if ( ansible_distribution == 'Alpine' ) else 'gnu' ) )
+      | first
       }}
 
 - name: create temporary directory

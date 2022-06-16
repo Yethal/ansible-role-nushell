@@ -3,3 +3,4 @@ skip_list:
     - 'role-name'
     - 'yaml'
     - 'var-spacing'
+    - 'internal-error'

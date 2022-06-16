@@ -38,6 +38,11 @@ jobs:
   molecule:
     name: Molecule
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - ubuntu2004
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -55,4 +60,7 @@ jobs:
 
       - name: Run tests
         run: molecule test
-
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}

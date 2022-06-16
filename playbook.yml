@@ -4,6 +4,6 @@
   become: false
   tasks:
     - name: Vars
-      include_vars: defaults/main.yml
+      ansible.builtin.include_vars: defaults/main.yml
     - name: Install
-      include_tasks: tasks/main.yml
+      ansible.builtin.include_tasks: tasks/main.yml

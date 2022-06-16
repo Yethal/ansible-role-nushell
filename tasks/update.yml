@@ -1,3 +1,4 @@
+---
 - name: Check installed nushell version
   ansible.builtin.shell:  # noqa command-instead-of-shell
     cmd: "version | get version"

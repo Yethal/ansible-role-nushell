@@ -1,3 +1,4 @@
+---
 - name: nushell
   hosts: all
   become: false

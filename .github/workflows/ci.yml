@@ -32,10 +32,11 @@ jobs:
         run: |
           pip3 install yamllint ansible-lint
 
-      - name: Run linters
-        run: |
-          yamllint .
-          ansible-lint
+      - name: Run yamllint
+        run: yamllint .
+
+      - name: Run ansible-lint
+        run:  ansible-lint
 
   molecule:
     name: Molecule

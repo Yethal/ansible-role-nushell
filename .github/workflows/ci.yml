@@ -35,9 +35,6 @@ jobs:
       - name: Run yamllint
         run: yamllint .
 
-      - name: Run ansible-lint
-        run:  ansible-lint
-
   molecule:
     name: Molecule
     runs-on: ubuntu-latest

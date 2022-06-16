@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip3 install yamllint ansible-lint
+          pip3 install yamllint
 
       - name: Run yamllint
         run: yamllint .

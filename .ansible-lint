@@ -1,6 +1,6 @@
 ---
 skip_list:
-    - 'role-name'
-    - 'yaml'
-    - 'var-spacing'
-    - 'internal-error'
+    - role-name
+    - yaml
+    - var-spacing
+    - internal-error

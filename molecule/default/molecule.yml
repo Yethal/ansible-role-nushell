@@ -5,7 +5,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: instance-ubuntu2004
+  - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
     command: ""
     volumes:

@@ -24,9 +24,9 @@
         latest_version: "{{ api_response.json | json_query('tag_name') }}"
 
     - name: Install nushell
-      ansible.builtin.import_tasks: install.yml
+      ansible.builtin.include_tasks: install.yml
       when: installed_version != latest_version
 
 - name: Update nushell to specific version
+  ansible.builtin.include_tasks: install.yml
   when: nushell_version != ('latest' or installed_version)
-  ansible.builtin.import_tasks: install.yml

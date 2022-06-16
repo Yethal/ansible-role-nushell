@@ -4,7 +4,7 @@
     cmd: "version | get version"
     executable: "{{ install_path }}/nu"
   register: installed
-  changed_when: installed_version is not defined
+  changed_when: False
 
 - name: Set installed nushell version as fact
   ansible.builtin.set_fact:

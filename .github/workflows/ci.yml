@@ -2,6 +2,9 @@
 name: CI
 'on':
   workflow_dispatch:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -11,6 +14,29 @@ defaults:
     working-directory: 'yethal.nushell'
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: 'yethal.nushell'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip3 install yamllint ansible-lint
+
+      - name: Run linters
+        run: |
+          yamllint .
+          ansible-lint
+
   molecule:
     name: Molecule
     runs-on: ubuntu-latest
@@ -27,9 +53,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install wheel setuptools
-          python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
 
       - name: Run tests
         run: molecule test
+

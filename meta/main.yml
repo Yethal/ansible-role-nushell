@@ -1,10 +1,12 @@
 ---
+dependencies: []
+
 galaxy_info:
   role_name: nushell
   author: yethal
   description: A new type of shell
   license: "license (BSD, MIT)"
-  min_ansible_version: "2.1"
+  min_ansible_version: "2.4"
   platforms:
     - name: EL
       versions:

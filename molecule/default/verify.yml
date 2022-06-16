@@ -6,7 +6,6 @@
   vars:
     install_path: /usr/local/bin
   tasks:
-
   - name: Get nushell install path
     ansible.builtin.stat:
       path: "{{ install_path }}/nu"

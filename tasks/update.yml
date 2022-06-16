@@ -1,9 +1,10 @@
+---
 - name: Check installed nushell version
   ansible.builtin.shell:  # noqa command-instead-of-shell
     cmd: "version | get version"
     executable: "{{ install_path }}/nu"
   register: installed
-  changed_when: installed_version is not defined
+  changed_when: False
 
 - name: Set installed nushell version as fact
   ansible.builtin.set_fact:

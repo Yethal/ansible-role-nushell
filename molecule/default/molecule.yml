@@ -1,5 +1,7 @@
 ---
 role_name_check: 1
+dependency:
+  name: galaxy
 driver:
   name: docker
 platforms:
@@ -18,6 +20,3 @@ provisioner:
   name: ansible
 verifier:
   name: ansible
-lint: |
-  yamllint .
-  ansible-lint

@@ -1,3 +1,4 @@
+---
 - name: Check if nushell is already installed
   ansible.builtin.stat:
     path: "{{ install_path }}/nu"

@@ -29,4 +29,4 @@
 
 - name: Update nushell to specific version
   ansible.builtin.include_tasks: install.yml
-  when: nushell_version != ('latest' or installed_version)
+  when: nushell_version != installed_version

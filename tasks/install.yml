@@ -132,3 +132,8 @@
     executable: "{{ install_path }}/nu"
   with_items: "{{ plugins.files }}"
   changed_when: false
+
+- name: Remove temporary directory
+  file:
+    path: "{{ tmp_path.path }}"
+    state: absent

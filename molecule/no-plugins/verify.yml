@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  vars_files:
+    - ../../vars/main.yml
+  vars:
+    nu_users:
+      - ansible
+  tasks:
+    - name: Include default assertions
+      ansible.builtin.include_tasks: "../common/{{ file }}.yml"
+      loop:
+        - binary
+        - configs
+        - shell
+        - banner
+        - profile
+      loop_control:
+        loop_var: file
+
+    - name: Get list of registered plugins
+      ansible.builtin.shell: # noqa command-instead-of-shell
+        cmd: "version|to json"
+        executable: "{{ nushell_binary_path }}/nu"
+      become_user: "{{ item }}"
+      become: true
+      register: installed_plugins
+      changed_when: false
+      loop: "{{ nu_users }}"
+
+    - name: Assert no plugins are registered
+      ansible.builtin.assert:
+        that: "{{ ((user.stdout | from_json).installed_plugins | length) == 0 }}"
+        quiet: true
+      loop: "{{ installed_plugins.results }}"
+      loop_control:
+        label: "{{ user.item }}"
+        loop_var: user

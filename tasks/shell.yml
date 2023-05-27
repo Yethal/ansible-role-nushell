@@ -1,0 +1,16 @@
+---
+- name: Add nushell to /etc/shells
+  become: true
+  ansible.builtin.lineinfile:
+    state: present
+    path: /etc/shells
+    line: "{{ nushell_binary_path }}/nu"
+  when: (set_shell|bool) and (nu_users|length > 0)
+
+- name: Set user shell to nushell
+  become: true
+  ansible.builtin.user:
+    name: "{{ item }}"
+    shell: "{{ nushell_binary_path }}/nu"
+  when: (set_shell|bool) and (nu_users|length > 0)
+  loop: "{{ nu_users }}"

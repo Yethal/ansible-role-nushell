@@ -1,0 +1,125 @@
+---
+- name: Gather users home_dirs (Linux)
+  when: ansible_system == 'Linux'
+  block:
+    - name: Query homedirs (Linux)
+      ansible.builtin.getent:
+        database: passwd
+      register: getent
+
+    - name: Set homedirs as fact (Linux)
+      ansible.builtin.set_fact:
+        home_dirs: "{{ nu_users | zip(nu_users| map('extract', getent.ansible_facts.getent_passwd, 4)) | community.general.dict | dict2items(key_name='user', value_name='homedir') }}"
+
+- name: Gather users home_dirs (macOS)
+  when: ansible_system == 'Darwin'
+  block:
+    - name: Query homedirs (macOS)
+      ansible.builtin.shell: # noqa command-instead-of-shell
+        cmd: "dscl . -read /Users/{{ item }} NFSHomeDirectory | cut -f2 -d ':' | tr -d '[:space:]'"
+      loop: "{{ nu_users }}"
+      register: dscl
+      changed_when: false
+
+    - name: Set homedirs as fact (macOS)
+      ansible.builtin.set_fact:
+        home_dirs: "{{ nu_users | zip(dscl.results | map(attribute='stdout')) | community.general.dict | dict2items(key_name='user', value_name='homedir') }}"
+
+- name: Stat existing config files
+  ansible.builtin.stat:
+    path: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
+    get_checksum: false
+  loop: "{{ home_dirs | product(config_urls|map(attribute='name')) }}"
+  loop_control:
+    label: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
+  register: config
+
+- name: Set missing configs as fact
+  ansible.builtin.set_fact:
+    missing_configs: "{{ config.results if overwrite_configs else (config.results | selectattr('stat.exists', 'equalto', false)) }}"
+
+- name: Copy local configs to user directory
+  ansible.builtin.copy:
+    src: "{{ config_path | default('playbook_dir', true) }}/{{ item.invocation.module_args.path | basename }}"
+    dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
+    mode: 0750
+    owner: "{{ item.item[0].user }}"
+    group: "{{ item.user if ansible_system == 'Linux' else 'staff' }}"
+  loop: "{{ missing_configs }}"
+  loop_control:
+    label: "{{ item.invocation.module_args.path }}"
+  when: install_configs == 'local'
+
+- name: Download remote configs
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "/tmp/{{ item.name }}"
+  loop: "{{ config_urls }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - install_configs == 'remote'
+    - missing_configs|length > 0
+  notify:
+    - "Remove temp configs"
+
+- name: Copy remote configs
+  ansible.builtin.copy:
+    src: "/tmp/{{ item.invocation.module_args.path | basename }}"
+    dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
+    owner: "{{ item.item[0].user }}"
+    group: "{{ item.item[0].user if ansible_system == 'Linux' else 'staff' }}"
+    mode: 0750
+    remote_src: true
+  loop: "{{ missing_configs }}"
+  loop_control:
+    label: "{{ item.invocation.module_args.path }}"
+  when:
+    - install_configs == 'remote'
+    - missing_configs|length > 0
+
+- name: Register all plugins
+  ansible.builtin.shell:  # noqa command-instead-of-shell
+    cmd: "register {{ nushell_binary_path }}/{{ item[0] }}"
+    executable: "{{ nushell_binary_path }}/nu"
+  become_user: "{{ item[1] }}"
+  become: true
+  loop: "{{ plugins | product(nu_users) }}"
+  loop_control:
+    label: "{{ item[0] }} {{ item[1] }}"
+  changed_when: false
+  when: install_plugins|bool
+
+- name: Remove old .profile line (to maintain compatibility with older revisions)
+  ansible.builtin.lineinfile:
+    path: "{{ item.homedir }}/.profile"
+    state: absent
+    line: "{{ nushell_binary_path }}/nu --config {{ item.homedir }}/{{ nushell_config_path }}/config.nu --env-config {{ item.homedir }}/{{ nushell_config_path }}/env.nu -l"
+  when: add_to_profile|bool
+  loop: "{{ home_dirs }}"
+  loop_control:
+    label: "{{ item.user }}"
+
+- name: Add nushell to .profile
+  ansible.builtin.lineinfile:
+    path: "{{ item.homedir }}/.profile"
+    state: present
+    line: "{{ nushell_binary_path }}/nu -l"
+    create: true
+  when: add_to_profile|bool
+  loop: "{{ home_dirs }}"
+  loop_control:
+    label: "{{ item.user }}"
+
+- name: Disable banner
+  ansible.builtin.lineinfile:
+    path: "{{ item.homedir }}/{{ nushell_config_path }}/config.nu"
+    state: present
+    backrefs: true
+    regexp: '^(\s*)show_banner: (true|false)(.*)$'
+    line: '\1show_banner: false\3'
+    validate: "{{ nushell_binary_path }}/nu --config %s -c help"
+  when: disable_banner|bool
+  loop: "{{ home_dirs }}"
+  loop_control:
+    label: "{{ item.user }}"

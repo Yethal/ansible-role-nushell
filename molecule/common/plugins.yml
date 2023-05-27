@@ -1,0 +1,19 @@
+---
+- name: Get list of registered plugins
+  ansible.builtin.shell: # noqa command-instead-of-shell
+    cmd: "version|get installed_plugins|split row ','|str trim|to json"
+    executable: "{{ nushell_binary_path }}/nu"
+  become_user: "{{ item }}"
+  become: true
+  register: installed_plugins
+  changed_when: false
+  loop: "{{ nu_users }}"
+
+- name: Verify all plugins were successfully registered
+  ansible.builtin.assert:
+    that:
+      - "'{{ item[0] }}' in {{ item[1] }}"
+    quiet: true
+  loop: "{{['gstat', 'inc', 'query'] | product(installed_plugins.results | map(attribute='stdout') | map('from_json')) }}"
+  loop_control:
+    label: "{{ item[0] }}"

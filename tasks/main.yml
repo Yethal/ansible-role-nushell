@@ -1,12 +1,35 @@
+---
 - name: Check if nushell is already installed
   ansible.builtin.stat:
-    path: "{{ install_path }}/nu"
+    path: "{{ nushell_binary_path }}/nu"
   register: nushell_status
 
-- name: Update nushell
-  ansible.builtin.import_tasks: update.yml
-  when: nushell_status.stat.exists
+- name: Set latest nushell version as fact
+  ansible.builtin.set_fact:
+    _nushell_version: "{{ ((lookup('ansible.builtin.url', releases_endpoint+'/latest') | from_json).tag_name) if nushell_version == 'latest' else nushell_version }}"
+  run_once: true
 
-- name: Install nushell
-  ansible.builtin.import_tasks: install.yml
-  when: not nushell_status.stat.exists
+- name: Check if nushell requires update
+  when: nushell_status.stat.exists
+  block:
+    - name: Check installed nushell version
+      ansible.builtin.command:
+        cmd: "{{ nushell_binary_path }}/nu --version"
+      register: installed
+      changed_when: False
+
+    - name: Set installed nushell version as fact
+      ansible.builtin.set_fact:
+        installed_version: "{{ installed.stdout }}"
+
+- name: Install nushell version {{ _nushell_version }}
+  ansible.builtin.include_tasks: install.yml
+  when: (not nushell_status.stat.exists) or (_nushell_version != installed_version)
+
+- name: Install nushell configs
+  ansible.builtin.include_tasks: configs.yml
+  when: (install_configs != "none") and (nu_users|length > 0)
+
+- name: Configure user shells
+  ansible.builtin.include_tasks: shell.yml
+  when: (set_shell|bool) and (nu_users|length > 0)

@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    nu_users:
+      - runner
+    set_shell: true
+  pre_tasks:
+    - name: Fail if not running on MacOS
+      ansible.builtin.fail:
+        msg: "This test should only run on MacOS"
+      when: ansible_system != 'Darwin'
+  roles:
+    - role: yethal.nushell

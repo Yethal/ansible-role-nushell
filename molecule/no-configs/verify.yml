@@ -1,0 +1,31 @@
+---
+- name: Verify
+  hosts: all
+  vars_files:
+    - ../../vars/main.yml
+  vars:
+    nu_users:
+      - ansible
+  tasks:
+    - name: Include default assertions
+      ansible.builtin.include_tasks: "../common/{{ file }}.yml"
+      loop:
+        - binary
+        - shell
+        - banner
+        - profile
+      loop_control:
+        loop_var: file
+
+    - name: Stat config files
+      ansible.builtin.stat:
+        path: "/home/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}"
+      loop: "{{ nu_users | product(config_urls|map(attribute='name')) }}"
+      loop_control:
+        label: "{{ item[0] }} - {{ item[1] }}"
+      register: configs
+
+    - name: Assert config files are absent
+      ansible.builtin.assert:
+        that: "{{ configs.results | selectattr('stat.exists', 'equalto', true) | length }} == 0"
+        quiet: true

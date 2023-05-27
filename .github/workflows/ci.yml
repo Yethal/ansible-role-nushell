@@ -1,6 +1,6 @@
 ---
 name: CI
-on:
+'on':
   workflow_dispatch:
   push:
     branches:
@@ -13,25 +13,72 @@ defaults:
   run:
     working-directory: 'yethal.nushell'
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
+
 jobs:
-  molecule:
-    name: Molecule
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    outputs:
+      tests: ${{ steps.tests-list.outputs.tests }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: 'yethal.nushell'
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
+          pip3 install yamllint
 
-      - name: Run tests
-        run: molecule test
+      - name: Run yamllint
+        run: yamllint .
+
+      - name: Generate test list
+        id: tests-list
+        run: echo "tests=$(ls molecule | grep -v "common\|macos" | jq -sRc 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+  molecule:
+    name: Molecule
+    runs-on: ${{ matrix.os }}
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        distro:
+          - ubuntu2204
+          - centos8
+        scenario: ${{ fromJson(needs.lint.outputs.tests) }}
+        include:
+          - os: macos-latest
+            scenario: macos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          path: 'yethal.nushell'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip3 install -r requirements.txt
+
+      - name: Run ${{ matrix.scenario }} test
+        run: molecule test -s ${{ matrix.scenario }}
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}

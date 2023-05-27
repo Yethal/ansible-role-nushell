@@ -1,7 +1,9 @@
 ---
 # Based on ansible-lint config
 extends: default
-
+ignore: |
+  playbook.yml
+  .github/
 rules:
   braces:
     max-spaces-inside: 1
@@ -17,7 +19,7 @@ rules:
     level: error
   comments: disable
   comments-indentation: disable
-  document-start: disable
+  document-start: enable
   empty-lines:
     max: 3
     level: error
@@ -26,6 +28,8 @@ rules:
   indentation: disable
   key-duplicates: enable
   line-length: disable
+  new-line-at-end-of-file: enable
   new-lines:
     type: unix
+  trailing-spaces: enable
   truthy: disable

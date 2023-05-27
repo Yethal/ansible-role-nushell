@@ -1,0 +1,28 @@
+---
+- name: Prepare
+  hosts: all
+  vars:
+    nu_users:
+      - ansible
+      - molecule
+  tasks:
+    - name: Set name of sudo group as fact
+      ansible.builtin.set_fact:
+        sudo_group: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
+
+    - name: Enable passwordless sudo
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%{{ sudo_group }}'
+        line: '%{{ sudo_group }} ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Create nonroot users
+      ansible.builtin.user:
+        state: present
+        name: "{{ item }}"
+        groups: "{{ sudo_group }}"
+        shell: /bin/bash
+        append: true
+      loop: "{{ nu_users }}"

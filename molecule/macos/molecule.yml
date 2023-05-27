@@ -1,0 +1,17 @@
+---
+role_name_check: 1
+dependency:
+  name: galaxy
+driver:
+  name: delegated
+  options:
+    managed: False
+    ansible_connection_options:
+      ansible_connection: local
+platforms:
+  - name: instance
+provisioner:
+  name: ansible
+  log: false
+verifier:
+  name: ansible

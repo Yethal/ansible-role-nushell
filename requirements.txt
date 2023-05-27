@@ -1,8 +1,4 @@
-wheel
-setuptools
 ansible
-ansible-lint
-yamllint
 molecule
-molecule-docker
-jmespath
+molecule-plugins
+molecule-plugins[docker]

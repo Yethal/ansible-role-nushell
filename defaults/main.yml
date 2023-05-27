@@ -1,6 +1,26 @@
 ---
 # defaults file for ansible-role-nushell
-install_path: /usr/local/bin
-nushell_path: "{{ ansible_env.HOME }}/.config/nushell"
+nu_users: []
+nushell_binary_path: /usr/local/bin
 nushell_version: latest
-releases_endpoint: https://api.github.com/repos/nushell/nushell/releases
+add_to_profile: false
+disable_banner: false
+set_shell: false
+install_plugins: true
+install_configs: remote
+overwrite_configs: false
+plugins:
+  - nu_plugin_custom_values
+  - nu_plugin_example
+  - nu_plugin_gstat
+  - nu_plugin_inc
+  - nu_plugin_query
+  - nu_plugin_formats
+min_glibc_version: '2.29'
+config_urls:
+  - name: config.nu
+    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/default_config.nu"
+  - name: env.nu
+    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/default_env.nu"
+  - name: login.nu
+    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/sample_login.nu"

@@ -1,0 +1,33 @@
+---
+- name: Verify
+  hosts: all
+  vars_files:
+    - ../../vars/main.yml
+  vars:
+    nu_users:
+      - runner
+  tasks:
+    - name: Include default assertions
+      ansible.builtin.include_tasks: "../common/{{ file }}.yml"
+      loop:
+        - binary
+        - configs
+        - plugins
+      loop_control:
+        loop_var: file
+
+    - name: Stat users
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: present
+      register: user_stats
+      check_mode: true
+      loop: "{{ nu_users }}"
+
+    - name: Assert nushell is set as default shell of users
+      ansible.builtin.assert:
+        that: item.shell == "{{ nushell_binary_path }}/nu"
+        quiet: true
+      loop: "{{ user_stats.results }}"
+      loop_control:
+        label: "{{ item.name }}"

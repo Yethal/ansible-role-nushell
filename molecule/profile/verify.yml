@@ -4,6 +4,7 @@
   vars_files:
     - ../../vars/main.yml
   vars:
+    add_to_profile: true
     nu_users:
       - ansible
   tasks:
@@ -15,6 +16,15 @@
         - plugins
         - shell
         - banner
-        - profile
       loop_control:
         loop_var: file
+
+    - name: Assert nu was added to .profile
+      ansible.builtin.lineinfile:
+        path: "/home/{{ item }}/.profile"
+        line: "{{ nushell_binary_path }}/nu -l"
+        state: present
+      check_mode: true
+      register: profile
+      failed_when: profile.changed
+      loop: "{{ nu_users }}"

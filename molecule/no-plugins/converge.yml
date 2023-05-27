@@ -1,8 +1,9 @@
 ---
 - name: Converge
   hosts: all
-  vars:
-    nu_users:
-      - ansible
   roles:
     - role: yethal.nushell
+  vars:
+    install_plugins: false
+    nu_users:
+      - ansible

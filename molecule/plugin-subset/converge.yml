@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: yethal.nushell
+  vars:
+    plugins:
+      - nu_plugin_query
+    nu_users:
+      - ansible

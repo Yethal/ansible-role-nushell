@@ -1,0 +1,45 @@
+---
+argument_specs:
+  main:
+    short_description: "Install nushell on your system"
+    description: >
+      "Install nushell on your system"
+    author: Yethal
+    options:
+      nushell_version:
+        type: str
+        default: latest
+        description: Nushell version to install
+      set_shell:
+        type: bool
+        default: false
+        description: Whether nushell should be set as default shell of the user
+      nushell_binary_path:
+        type: str
+        default: /usr/local/bin
+        description: Path nushell should be installed to
+      install_plugins:
+        type: bool
+        default: true
+        description: Whether bundled plugins should be installed as well
+      install_configs:
+        type: str
+        choices: ['local', 'remote', 'none']
+        default: 'remote'
+        description: Whether config files should be copied from controller, downloaded from the internet or neither. local option defaults to playbook dir unless overriden
+      overwrite_configs:
+        type: bool
+        default: false
+        description: Whether config files should be overwritten during nushell update. Please note that this will erase any custom config changes
+      add_to_profile:
+        type: bool
+        default: false
+        description: Whether nushell should be added to .profile
+      disable_banner:
+        type: bool
+        default: false
+        description: Whether built-in banner should be disabled
+      config_path:
+        type: str
+        default: playbook_dir
+        description: Directory from which configs will be copied to server when using local install_configs

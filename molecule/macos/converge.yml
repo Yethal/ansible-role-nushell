@@ -5,6 +5,7 @@
     nu_users:
       - runner
     set_shell: true
+    add_to_profile: true
   pre_tasks:
     - name: Fail if not running on MacOS
       ansible.builtin.fail:

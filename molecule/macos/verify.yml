@@ -31,3 +31,13 @@
       loop: "{{ user_stats.results }}"
       loop_control:
         label: "{{ item.name }}"
+
+    - name: Assert nu was added to .zprofile
+      ansible.builtin.lineinfile:
+        path: "/home/{{ item }}/.zprofile"
+        line: "{{ nushell_binary_path }}/nu -l"
+        state: present
+      check_mode: true
+      register: profile
+      failed_when: profile.changed
+      loop: "{{ nu_users }}"

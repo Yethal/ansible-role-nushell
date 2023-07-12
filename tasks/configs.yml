@@ -102,7 +102,7 @@
 
 - name: Add nushell to .profile
   ansible.builtin.lineinfile:
-    path: "{{ item.homedir }}/.profile"
+    path: "{{ item.homedir }}/{{ '.profile' if ansible_system == 'Linux' else '.zprofile' }}"
     state: present
     line: "{{ nushell_binary_path }}/nu -l"
     create: true

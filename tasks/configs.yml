@@ -55,7 +55,7 @@
     url: "{{ item.url }}"
     dest: "/tmp/{{ item.name }}"
     owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
+    group: "{{ item.user if ansible_system == 'Linux' else 'wheel' }}"
     mode: "0750"
   loop: "{{ config_urls }}"
   loop_control:

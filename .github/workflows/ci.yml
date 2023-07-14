@@ -36,10 +36,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip3 install yamllint
+          pip3 install -r requirements.txt
 
       - name: Run yamllint
         run: yamllint .
+
+      - name: Run ansible-lint
+        run: ansible-lint .
 
       - name: Generate test list
         id: tests-list

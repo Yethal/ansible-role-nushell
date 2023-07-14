@@ -1,4 +1,6 @@
 ansible
+yamllint
+ansible-lint
 molecule
 molecule-plugins
 molecule-plugins[docker]

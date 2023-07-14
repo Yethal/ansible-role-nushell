@@ -4,7 +4,8 @@
   block:
     - name: Get libc version
       ansible.builtin.shell:
-        cmd: "ldd --version|grep ldd|cut -f4 -d ' '"
+        cmd: "set -euo pipefail && ldd --version|grep ldd|cut -f4 -d ' '"
+        executable: /bin/bash
       register: libc
       changed_when: false
 

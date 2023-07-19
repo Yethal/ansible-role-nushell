@@ -2,7 +2,7 @@
 - name: Verify
   hosts: all
   vars_files:
-    - ../../defaults/main.yml
+    - ../../vars/main.yml
   vars:
     expected_version: 0.71.0
     nu_users:

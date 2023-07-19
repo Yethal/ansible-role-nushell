@@ -2,7 +2,7 @@
 - name: Verify
   hosts: all
   vars_files:
-    - ../../defaults/main.yml
+    - ../../vars/main.yml
   vars:
     nu_users:
       - ansible

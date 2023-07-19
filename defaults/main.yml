@@ -9,6 +9,8 @@ set_shell: false
 install_plugins: true
 install_configs: remote
 overwrite_configs: false
+add_hostname_to_prompt: false
+clear_login_file: false
 plugins:
   - nu_plugin_custom_values
   - nu_plugin_example

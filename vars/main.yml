@@ -2,10 +2,3 @@
 nushell_binary_path: /usr/local/bin
 nushell_config_path: "{{ 'Library/Application Support/nushell' if ansible_system == 'Darwin' else '.config/nushell' }}"
 releases_endpoint: https://api.github.com/repos/nushell/nushell/releases
-config_urls:
-  - name: config.nu
-    url: https://raw.githubusercontent.com/nushell/nushell/main/crates/nu-utils/src/sample_config/default_config.nu
-  - name: env.nu
-    url: https://raw.githubusercontent.com/nushell/nushell/main/crates/nu-utils/src/sample_config/default_env.nu
-  - name: login.nu
-    url: https://raw.githubusercontent.com/nushell/nushell/main/crates/nu-utils/src/sample_config/sample_login.nu

@@ -43,3 +43,11 @@ argument_specs:
         type: str
         default: playbook_dir
         description: Directory from which configs will be copied to server when using local install_configs
+      add_hostname_to_prompt:
+        type: bool
+        default: false
+        description: Whether inventory hostname should be added to the prompt
+      clear_login_file:
+        type: bool
+        default: false
+        description: Whether to remove all non-commented lines from login.nu

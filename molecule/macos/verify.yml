@@ -2,10 +2,14 @@
 - name: Verify
   hosts: all
   vars_files:
-    - ../../defaults/main.yml
+    - ../../vars/main.yml
   vars:
     nu_users:
       - runner
+    config_urls:
+      - name: config.nu
+      - name: env.nu
+      - name: login.nu
   tasks:
     - name: Include default assertions
       ansible.builtin.include_tasks: "../common/{{ file }}.yml"

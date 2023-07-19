@@ -6,6 +6,10 @@
   vars:
     nu_users:
       - ansible
+    config_urls:
+      - name: config.nu
+      - name: env.nu
+      - name: login.nu
   tasks:
     - name: Include default assertions
       ansible.builtin.include_tasks: "../common/{{ file }}.yml"
@@ -16,10 +20,6 @@
         - profile
       loop_control:
         loop_var: file
-
-    - name: Set _nushell_version as fact
-      ansible.builtin.set_fact:
-        _nushell_version: uglyhack
 
     - name: Stat config files
       ansible.builtin.stat:

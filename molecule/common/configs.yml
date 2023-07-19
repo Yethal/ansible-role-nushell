@@ -1,4 +1,8 @@
 ---
+- name: Set _nushell_version as fact
+  ansible.builtin.set_fact:
+    _nushell_version: uglyhack
+
 - name: Stat config files
   ansible.builtin.stat:
     path: "/{{'Users' if ansible_system == 'Darwin' else 'home'}}/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}"

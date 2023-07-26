@@ -4,7 +4,6 @@
   vars:
     nu_users:
       - ansible
-      - molecule
   tasks:
     - name: Set name of sudo group as fact
       ansible.builtin.set_fact:

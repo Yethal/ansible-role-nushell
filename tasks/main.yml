@@ -25,6 +25,7 @@
 - name: Install nushell version {{ _nushell_version }}
   ansible.builtin.include_tasks: install.yml
   when: (not nushell_status.stat.exists) or (_nushell_version != installed_version)
+  register: install_status
 
 - name: Install nushell configs
   ansible.builtin.include_tasks: configs.yml

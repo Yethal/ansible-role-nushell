@@ -36,7 +36,7 @@
 
 - name: Set missing configs as fact
   ansible.builtin.set_fact:
-    missing_configs: "{{ config.results if overwrite_configs else (config.results | selectattr('stat.exists', 'equalto', false)) }}"
+    missing_configs: "{{ config.results if (overwrite_configs and (not install_status.skipped|default(false))) else (config.results | selectattr('stat.exists', 'equalto', false)) }}"
 
 - name: Copy local configs to user directory
   ansible.builtin.copy:

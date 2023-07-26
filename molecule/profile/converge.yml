@@ -1,9 +1,11 @@
 ---
 - name: Converge
   hosts: all
-  roles:
-    - role: yethal.nushell
   vars:
     add_to_profile: true
     nu_users:
       - ansible
+  tasks:
+    - name: "Include yethal.nushell"
+      ansible.builtin.include_role:
+        name: yethal.nushell

@@ -11,5 +11,7 @@
       ansible.builtin.fail:
         msg: "This test should only run on MacOS"
       when: ansible_system != 'Darwin'
-  roles:
-    - role: yethal.nushell
+  tasks:
+    - name: "Include yethal.nushell"
+      ansible.builtin.include_role:
+        name: yethal.nushell

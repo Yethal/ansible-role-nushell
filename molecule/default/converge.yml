@@ -5,5 +5,7 @@
     nu_users:
       - ansible
     overwrite_configs: true
-  roles:
-    - role: yethal.nushell
+  tasks:
+    - name: "Include yethal.nushell"
+      ansible.builtin.include_role:
+        name: yethal.nushell

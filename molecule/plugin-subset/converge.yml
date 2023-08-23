@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   vars:
-    plugins:
+    nu_plugins:
       - nu_plugin_query
     nu_users:
       - ansible

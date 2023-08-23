@@ -3,7 +3,7 @@
   hosts: all
   vars:
     nushell_version: 0.71.0
-    plugins:
+    nu_plugins:
       - nu_plugin_example
       - nu_plugin_gstat
       - nu_plugin_inc

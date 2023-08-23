@@ -87,7 +87,7 @@
     executable: "{{ nushell_binary_path }}/nu"
   become_user: "{{ item[1] }}"
   become: true
-  loop: "{{ plugins | product(nu_users) }}"
+  loop: "{{ nu_plugins | product(nu_users) }}"
   loop_control:
     label: "{{ item[0] }} {{ item[1] }}"
   changed_when: false

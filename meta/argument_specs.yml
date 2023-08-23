@@ -22,6 +22,20 @@ argument_specs:
         type: bool
         default: true
         description: Whether bundled plugins should be installed as well
+      nu_users:
+        type: list
+        default: []
+        description: List of users for whom nushell should be set as shell or added to .profile
+      nu_plugins:
+        type: list
+        default:
+          - nu_plugin_custom_values
+          - nu_plugin_example
+          - nu_plugin_gstat
+          - nu_plugin_inc
+          - nu_plugin_query
+          - nu_plugin_formats
+        description: List of plugins to preregister during installation
       install_configs:
         type: str
         choices: ['local', 'remote', 'none']

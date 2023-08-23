@@ -3,7 +3,7 @@ role_name_check: 1
 dependency:
   name: galaxy
 driver:
-  name: delegated
+  name: default
   options:
     managed: False
     ansible_connection_options:

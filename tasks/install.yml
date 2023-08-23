@@ -44,7 +44,7 @@
     group: "{{ 'root' if ansible_system == 'Linux' else 'wheel' }}"
     mode: 0751
     remote_src: yes
-  loop: "{{ plugins }}"
+  loop: "{{ nu_plugins }}"
   loop_control:
     label: "{{ item }}"
   when: install_plugins|bool

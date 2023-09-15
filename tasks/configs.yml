@@ -124,7 +124,7 @@
     backrefs: true
     regexp: '^(\s*)show_banner: (true|false)(.*)$'
     line: '\1show_banner: false\3'
-    validate: "{{ nushell_binary_path }}/nu --config %s -c help"
+    validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env.config'"
   when: disable_banner|bool
   loop: "{{ home_dirs }}"
   loop_control:
@@ -135,7 +135,7 @@
     path: "{{ item.homedir }}/{{ nushell_config_path }}/env.nu"
     regexp: "^.*PROMPT_INDICATOR.*$"
     line: "{{ '$env.' if '0.83.0' is version(_nushell_version, '<=') else 'let-env '}}PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
-    validate: "{{ nushell_binary_path }}/nu --env-config %s -c help"
+    validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env'"
   when: add_hostname_to_prompt|bool
   loop: "{{ home_dirs }}"
   loop_control:
@@ -146,6 +146,7 @@
     path: "{{ item.homedir }}/{{ nushell_config_path }}/login.nu"
     regexp: "^(?!#).*"
     state: absent
+    validate: "{{ nushell_binary_path }}/nu -n -c 'source %s'"
   when: clear_login_file|bool
   loop: "{{ home_dirs }}"
   loop_control:

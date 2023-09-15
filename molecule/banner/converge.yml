@@ -3,6 +3,8 @@
   hosts: all
   vars:
     disable_banner: true
+    add_hostname_to_prompt: true
+    clear_login_file: true
     nu_users:
       - ansible
   tasks:

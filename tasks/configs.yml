@@ -93,16 +93,6 @@
   changed_when: false
   when: install_plugins|bool
 
-- name: Remove old .profile line (to maintain compatibility with older revisions)
-  ansible.builtin.lineinfile:
-    path: "{{ item.homedir }}/.profile"
-    state: absent
-    line: "{{ nushell_binary_path }}/nu --config {{ item.homedir }}/{{ nushell_config_path }}/config.nu --env-config {{ item.homedir }}/{{ nushell_config_path }}/env.nu -l"
-  when: add_to_profile|bool
-  loop: "{{ home_dirs }}"
-  loop_control:
-    label: "{{ item.user }}"
-
 - name: Add nushell to .profile
   ansible.builtin.lineinfile:
     path: "{{ item.homedir }}/{{ '.profile' if ansible_system == 'Linux' else '.zprofile' }}"

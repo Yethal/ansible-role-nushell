@@ -43,7 +43,7 @@ None.
 
 ## Local testing
 
-Alternatively run `pip install -r requirements.txt` and run automated tests via molecule by running `molecule test --all`
+Alternatively run `pip install -r requirements.txt` and run automated tests via molecule by running `molecule test`
 
 ## Example Playbook
 

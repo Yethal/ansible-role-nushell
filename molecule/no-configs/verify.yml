@@ -31,5 +31,5 @@
 
     - name: Assert config files are absent
       ansible.builtin.assert:
-        that: "{{ configs.results | selectattr('stat.exists', 'equalto', true) | length }} == 0"
+        that: configs.results | selectattr('stat.exists', 'equalto', true) | length == 0
         quiet: true

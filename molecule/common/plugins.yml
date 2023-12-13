@@ -12,7 +12,7 @@
 - name: Verify all plugins were successfully registered
   ansible.builtin.assert:
     that:
-      - "'{{ item[0] }}' in {{ item[1] }}"
+      - item[0] in item[1]
     quiet: true
   loop: "{{['gstat', 'inc', 'query'] | product(installed_plugins.results | map(attribute='stdout') | map('from_json')) }}"
   loop_control:

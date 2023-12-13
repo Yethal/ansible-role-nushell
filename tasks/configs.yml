@@ -9,7 +9,7 @@
 
     - name: Set homedirs as fact (Linux)
       ansible.builtin.set_fact:
-        home_dirs: "{{ nu_users | zip(nu_users| map('extract', getent.ansible_facts.getent_passwd, 4)) | community.general.dict | dict2items(key_name='user', value_name='homedir') }}"
+        home_dirs: "{{ nu_users | zip(nu_users | map('extract', getent.ansible_facts.getent_passwd, 4)) | community.general.dict | dict2items(key_name='user', value_name='homedir') }}"
 
 - name: Gather users home_dirs (macOS)
   when: ansible_system == 'Darwin'
@@ -29,14 +29,14 @@
   ansible.builtin.stat:
     path: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
     get_checksum: false
-  loop: "{{ home_dirs | product(config_urls|map(attribute='name')) }}"
+  loop: "{{ home_dirs | product(config_urls | map(attribute='name')) }}"
   loop_control:
     label: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
   register: config
 
 - name: Set missing configs as fact
   ansible.builtin.set_fact:
-    missing_configs: "{{ config.results if (overwrite_configs and (not install_status.skipped|default(false))) else (config.results | selectattr('stat.exists', 'equalto', false)) }}"
+    missing_configs: "{{ config.results if (overwrite_configs and (not install_status.skipped | default(false))) else (config.results | selectattr('stat.exists', 'equalto', false)) }}"
 
 - name: Copy local configs to user directory
   ansible.builtin.copy:
@@ -124,7 +124,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item.homedir }}/{{ nushell_config_path }}/env.nu"
     regexp: "^.*PROMPT_INDICATOR.*$"
-    line: "{{ '$env.' if '0.83.0' is version(_nushell_version, '<=') else 'let-env '}}PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
+    line: "{{ '$env.' if '0.83.0' is version(_nushell_version, '<=') else 'let-env ' }}PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
     validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env'"
   when: add_hostname_to_prompt|bool
   loop: "{{ home_dirs }}"

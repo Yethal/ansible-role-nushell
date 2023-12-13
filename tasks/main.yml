@@ -6,7 +6,7 @@
 
 - name: Set latest nushell version as fact
   ansible.builtin.set_fact:
-    _nushell_version: "{{ ((lookup('ansible.builtin.url', releases_endpoint+'/latest') | from_json).tag_name) if nushell_version == 'latest' else nushell_version }}"
+    _nushell_version: "{{ ((lookup('ansible.builtin.url', releases_endpoint + '/latest') | from_json).tag_name) if nushell_version == 'latest' else nushell_version }}"
   run_once: true
 
 - name: Check if nushell requires update

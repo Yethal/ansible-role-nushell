@@ -1,0 +1,48 @@
+---
+- name: Cleanup
+  hosts: all
+  vars:
+    nu_users:
+      - runner
+  pre_tasks:
+    - name: Fail if not running on MacOS
+      ansible.builtin.fail:
+        msg: "This test should only run on MacOS"
+      when: ansible_system != 'Darwin'
+  tasks:
+    - name: Set user shell back to bash
+      ansible.builtin.user:
+        name: "{{ item }}"
+        shell: /bin/zsh
+      loop: "{{ nu_users }}"
+
+    - name: Remove nushell from .profile
+      ansible.builtin.lineinfile:
+        path: "/home/{{ item }}/.zprofile"
+        state: absent
+        line: "/usr/local/bin/nu -l"
+      loop: "{{ nu_users }}"
+
+    - name: Remove config directory
+      ansible.builtin.file:
+        path: /home/{{ item }}/.config/nushell
+        state: absent
+      loop: "{{ nu_users }}"
+
+    - name: Remove nushell from /etc/shells
+      ansible.builtin.lineinfile:
+        state: absent
+        path: /etc/shells
+        line: "/usr/local/bin/nu"
+
+    - name: Find binaries
+      ansible.builtin.find:
+        paths: /usr/local/bin
+        patterns: 'nu*'
+      register: binaries
+
+    - name: Remove binaries
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ binaries.files | map(attribute='path') }}"

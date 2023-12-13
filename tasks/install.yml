@@ -15,7 +15,7 @@
 
 - name: Set package name as fact
   ansible.builtin.set_fact:
-    nushell_package: "nu-{{ _nushell_version }}-{{ ansible_architecture }}-{{ 'unknown-linux-'+libc_flavor if ansible_system == 'Linux' else 'apple-darwin' }}"
+    nushell_package: "nu-{{ _nushell_version }}-{{ ansible_architecture }}-{{ 'unknown-linux-' + libc_flavor if ansible_system == 'Linux' else 'apple-darwin' }}"
 
 - name: Extract package
   ansible.builtin.unarchive:

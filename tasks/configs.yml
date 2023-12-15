@@ -54,8 +54,8 @@
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "/tmp/{{ item.name }}"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id if ansible_system == 'Linux' else 'wheel' }}"
+    #owner: "{{ ansible_user_id }}"
+    #group: "{{ ansible_user_id if ansible_system == 'Linux' else 'wheel' }}"
     mode: "0750"
   loop: "{{ config_urls }}"
   loop_control:

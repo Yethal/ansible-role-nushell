@@ -16,5 +16,5 @@
 
 - name: Assert config files are present
   ansible.builtin.assert:
-    that: "{{ configs.results | map(attribute='stat.exists') }} is all"
+    that: configs.results | map(attribute='stat.exists') is all
     quiet: true

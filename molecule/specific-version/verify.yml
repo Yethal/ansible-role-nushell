@@ -29,5 +29,5 @@
 
     - name: Assert nushell version is the same as specified during converge
       ansible.builtin.assert:
-        that: "'{{ version_to_check.stdout }}' == '{{ expected_version }}'"
+        that: version_to_check.stdout == expected_version
         quiet: true

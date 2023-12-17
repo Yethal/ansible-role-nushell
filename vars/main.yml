@@ -2,3 +2,6 @@
 nushell_binary_path: /usr/local/bin
 nushell_config_path: "{{ 'Library/Application Support/nushell' if ansible_system == 'Darwin' else '.config/nushell' }}"
 releases_endpoint: https://api.github.com/repos/nushell/nushell/releases
+arch_map:
+  arm64: aarch64
+  armhf: armv7

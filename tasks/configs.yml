@@ -44,7 +44,7 @@
     dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
     mode: "0750"
     owner: "{{ item.item[0].user }}"
-    group: "{{ item.user if ansible_system == 'Linux' else 'staff' }}"
+    #group: "{{ item.user if ansible_system == 'Linux' else 'staff' }}"
   loop: "{{ missing_configs }}"
   loop_control:
     label: "{{ item.invocation.module_args.path }}"
@@ -54,7 +54,7 @@
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "/tmp/{{ item.name }}"
-    #owner: "{{ ansible_user_id }}"
+    owner: "{{ ansible_user_id }}"
     #group: "{{ ansible_user_id if ansible_system == 'Linux' else 'wheel' }}"
     mode: "0750"
   loop: "{{ config_urls }}"
@@ -71,7 +71,7 @@
     src: "/tmp/{{ item.invocation.module_args.path | basename }}"
     dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
     owner: "{{ item.item[0].user }}"
-    group: "{{ item.item[0].user if ansible_system == 'Linux' else 'staff' }}"
+    #group: "{{ item.item[0].user if ansible_system == 'Linux' else 'staff' }}"
     mode: "0750"
     remote_src: true
   loop: "{{ missing_configs }}"
@@ -99,7 +99,7 @@
     state: present
     line: "{{ nushell_binary_path }}/nu -l"
     owner: "{{ item.user }}"
-    group: "{{ item.user if ansible_system == 'Linux' else 'staff' }}"
+    #group: "{{ item.user if ansible_system == 'Linux' else 'staff' }}"
     mode: "0750"
     create: true
   when: add_to_profile|bool

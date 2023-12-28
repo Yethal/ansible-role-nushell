@@ -9,6 +9,11 @@
       ansible.builtin.set_fact:
         sudo_group: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
 
+    - name: Create group {{ sudo_group }}
+      ansible.builtin.group:
+        name: "{{ sudo_group }}"
+        state: present
+
     - name: Enable passwordless sudo
       ansible.builtin.lineinfile:
         path: /etc/sudoers
@@ -21,7 +26,7 @@
       ansible.builtin.user:
         state: present
         name: "{{ item }}"
-        groups: "{{ sudo_group }}"
+        group: "{{ sudo_group }}"
         shell: /bin/bash
         append: true
       loop: "{{ nu_users }}"

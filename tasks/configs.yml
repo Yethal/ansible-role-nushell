@@ -71,7 +71,6 @@
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "/tmp/{{ item.name }}"
-    owner: "{{ ansible_user_id }}"
     mode: "0750"
   loop: "{{ config_urls }}"
   loop_control:
@@ -115,7 +114,7 @@
     state: present
     line: "{{ nushell_binary_path }}/nu -l"
     owner: "{{ item.user }}"
-    group: "{{ user_groups[ansible_facts.getent_passwd[item.item[0].user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    group: "{{ user_groups[ansible_facts.getent_passwd[item.user][2]] if ansible_system == 'Linux' else 'staff' }}"
     mode: "0750"
     create: true
   when: add_to_profile|bool

@@ -59,7 +59,7 @@
   ansible.builtin.copy:
     src: "{{ config_path | default('playbook_dir', true) }}/{{ item.invocation.module_args.path | basename }}"
     dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
-    mode: "0750"
+    mode: "0644"
     owner: "{{ item.item[0].user }}"
     group: "{{ user_groups[ansible_facts.getent_passwd[item.item[0].user][2]] if ansible_system == 'Linux' else 'staff' }}"
   loop: "{{ missing_configs }}"
@@ -87,7 +87,7 @@
     dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
     owner: "{{ item.item[0].user }}"
     group: "{{ user_groups[ansible_facts.getent_passwd[item.item[0].user][2]] if ansible_system == 'Linux' else 'staff' }}"
-    mode: "0750"
+    mode: "0644"
     remote_src: true
   loop: "{{ missing_configs }}"
   loop_control:
@@ -96,15 +96,29 @@
     - install_configs == 'remote'
     - missing_configs|length > 0
 
-- name: Register all plugins
-  ansible.builtin.shell:  # noqa command-instead-of-shell
-    cmd: "register {{ nushell_binary_path }}/{{ item[0] }}"
-    executable: "{{ nushell_binary_path }}/nu"
-  become_user: "{{ item[1] }}"
-  become: true
-  loop: "{{ nu_plugins | product(nu_users) }}"
+- name: Create plugins config file
+  ansible.builtin.file:
+    state: touch
+    access_time: preserve
+    modification_time: preserve
+    path: "{{ item.homedir }}/{{ nushell_config_path }}/plugin.nu"
+    owner: "{{ item.user }}"
+    group: "{{ user_groups[ansible_facts.getent_passwd[item.user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    mode: "0644"
+  loop: "{{ home_dirs }}"
   loop_control:
-    label: "{{ item[0] }} {{ item[1] }}"
+    label: "{{ item.user }}"
+  when: install_plugins|bool
+
+- name: Register all plugins
+  ansible.builtin.command:
+    argv:
+      - "{{ nushell_binary_path }}/nu"
+      - --plugin-config "{{ item[0].homedir }}/{{ nushell_config_path }}/plugin.nu"
+      - -c "register {{ nushell_binary_path }}/{{ item[1] }}"
+  loop: "{{ home_dirs | product(nu_plugins) }}"
+  loop_control:
+    label: "{{ item[0].user }} {{ item[1] }}"
   changed_when: false
   when: install_plugins|bool
 

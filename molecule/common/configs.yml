@@ -9,6 +9,9 @@
 - name: Stat config files
   ansible.builtin.stat:
     path: "/{{'Users' if ansible_system == 'Darwin' else 'home'}}/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   loop: "{{ nu_users | product(config_urls | map(attribute='name')) }}"
   loop_control:
     label: "{{ item[0] }} - {{ item[1] }}"

@@ -2,6 +2,9 @@
 - name: Check if nushell is already installed
   ansible.builtin.stat:
     path: "{{ nushell_binary_path }}/nu"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: nushell_status
 
 - name: Set latest nushell version as fact

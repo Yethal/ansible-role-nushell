@@ -2,6 +2,9 @@
 - name: Get nushell install path
   ansible.builtin.stat:
     path: "{{ nushell_binary_path }}/nu"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: nu_path
 
 - name: Assert nushell binary is present

@@ -45,7 +45,9 @@
 - name: Stat existing config files
   ansible.builtin.stat:
     path: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
+    get_attributes: false
     get_checksum: false
+    get_mime: false
   loop: "{{ home_dirs | product(config_urls | map(attribute='name')) }}"
   loop_control:
     label: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"

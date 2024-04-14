@@ -5,3 +5,14 @@ releases_endpoint: https://api.github.com/repos/nushell/nushell/releases
 arch_map:
   arm64: aarch64
   armhf: armv7
+package_map:
+  linux:
+    musl:
+      default: unknown-linux-musl
+      full: linux-musl-full
+    gnu:
+      default: unknown-linux-gnu
+      full: linux-gnu-full
+  darwin:
+    default: apple-darwin
+    full: darwin-full

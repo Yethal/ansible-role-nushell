@@ -12,28 +12,27 @@
       loop:
         - binary
         - configs
+        - plugins
         - shell
         - banner
         - profile
-        - variant
       loop_control:
         loop_var: file
 
-    - name: Get list of registered plugins
+    - name: Get list of features
       ansible.builtin.shell: # noqa command-instead-of-shell
-        cmd: "version|to json"
+        cmd: "version|get features"
         executable: "{{ nushell_binary_path }}/nu"
       become_user: "{{ item }}"
       become: true
-      register: installed_plugins
+      register: features
       changed_when: false
       loop: "{{ nu_users }}"
 
-    - name: Assert no plugins are registered
+    - name: Verify dataframes feature is present
       ansible.builtin.assert:
-        that: "{{ ((user.stdout | from_json).installed_plugins | length) == 0 }}"
+        that: "'dataframe' in item.stdout"
         quiet: true
-      loop: "{{ installed_plugins.results }}"
+      loop: "{{ features.results }}"
       loop_control:
-        label: "{{ user.item }}"
-        loop_var: user
+        label: "{{ item.item }}"

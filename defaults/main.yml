@@ -3,6 +3,7 @@
 nu_users: []
 nushell_binary_path: /usr/local/bin
 nushell_version: latest
+nushell_variant: default
 add_to_profile: false
 disable_banner: false
 set_shell: false

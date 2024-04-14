@@ -10,6 +10,12 @@ argument_specs:
         type: str
         default: latest
         description: Nushell version to install
+      nushell_variant:
+        type: str
+        choices:
+          - default
+          - full
+        description: Nushell package variant to install
       set_shell:
         type: bool
         default: false

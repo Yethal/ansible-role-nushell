@@ -4,7 +4,7 @@
   vars_files:
     - ../../vars/main.yml
   vars:
-    expected_version: 0.71.0
+    expected_version: 0.87.0
     nu_users:
       - ansible
   tasks:
@@ -17,6 +17,7 @@
         - shell
         - banner
         - profile
+        - variant
       loop_control:
         loop_var: file
 

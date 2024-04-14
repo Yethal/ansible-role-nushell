@@ -15,6 +15,7 @@
         - plugins
         - shell
         - profile
+        - variant
       loop_control:
         loop_var: file
 

@@ -13,6 +13,7 @@
         - binary
         - configs
         - plugins
+        - variant
       loop_control:
         loop_var: file
 

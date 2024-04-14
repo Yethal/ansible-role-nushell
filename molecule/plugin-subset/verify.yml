@@ -15,6 +15,7 @@
         - shell
         - banner
         - profile
+        - variant
       loop_control:
         loop_var: file
 

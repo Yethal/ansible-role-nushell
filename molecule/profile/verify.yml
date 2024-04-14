@@ -16,6 +16,7 @@
         - plugins
         - shell
         - banner
+        - variant
       loop_control:
         loop_var: file
 

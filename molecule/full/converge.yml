@@ -2,12 +2,7 @@
 - name: Converge
   hosts: all
   vars:
-    nushell_version: 0.87.0
-    nu_plugins:
-      - nu_plugin_example
-      - nu_plugin_gstat
-      - nu_plugin_inc
-      - nu_plugin_query
+    nushell_variant: full
     nu_users:
       - ansible
   tasks:

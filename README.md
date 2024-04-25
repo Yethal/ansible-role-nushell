@@ -22,7 +22,7 @@ For more information about variables marked with an asterisk please read the Cav
 | set_shell              | whether ansible should set nu as default shell of the user\*    | false               |
 | install_plugins        | whether ansible should install bundled plugins                  | true                |
 | install_configs        | whether ansible should install config files                     | true                |
-| overwrite_configs      | whether ansible should overwrite config files on update         | true                |
+| overwrite_configs      | whether ansible should overwrite config files on update         | false               |
 | nu_plugins             | which plugins should be registered by default                   | all plugins         |
 | add_to_profile         | whether ansible should add path to nu to .profile\*             | false               |
 | disable_banner         | whether built-in nushell banner should be disabled              | false               |

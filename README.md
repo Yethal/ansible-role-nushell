@@ -15,7 +15,7 @@ For more information about variables marked with an asterisk please read the Cav
 | ---------------------- | --------------------------------------------------------------- | ------------------- |
 | nushell_binary_path    | Directory where nushell binary will be stored                   | /usr/local/bin      |
 | nushell_version        | either 'latest' or version tag                                  | latest              |
-| nushell_variant        | either 'default' or 'full                                       | latest              |
+| nushell_variant        | either 'default' or 'full'                                      | default             |
 | config_url             | url ansible should download config.nu file from                 | nushell preset file |
 | env_url                | url ansible should download env.nu file from                    | nushell preset file |
 | login_url              | url ansible should download login.nu file from                  | nushell preset file |

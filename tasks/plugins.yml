@@ -1,8 +1,8 @@
 ---
 - name: Set facts
   ansible.builtin.set_fact:
-    plugin_file: "{{ 'plugin.msgpackz' if _nushell_version is version('0.93.0', '<=') else 'plugin.nu' }}"
-    plugin_command: "{{ 'plugin add' if _nushell_version is version('0.93.0', '<=') else 'register' }}"
+    plugin_file: "{{ 'plugin.msgpackz' if _nushell_version is version('0.93.0', '>=') else 'plugin.nu' }}"
+    plugin_command: "{{ 'plugin add' if _nushell_version is version('0.93.0', '>=') else 'register' }}"
 
 - name: Create plugins config file
   ansible.builtin.file:

@@ -1,0 +1,29 @@
+---
+- name: Set facts
+  ansible.builtin.set_fact:
+    plugin_file: "{{ 'plugin.msgpackz' if _nushell_version is version('0.93.0', '>=') else 'plugin.nu' }}"
+    plugin_command: "{{ 'plugin add' if _nushell_version is version('0.93.0', '>=') else 'register' }}"
+
+- name: Create plugins config file
+  ansible.builtin.file:
+    state: touch
+    access_time: preserve
+    modification_time: preserve
+    path: "{{ item.homedir }}/{{ nushell_config_path }}/{{ plugin_file }}"
+    owner: "{{ item.user }}"
+    group: "{{ user_groups[ansible_facts.getent_passwd[item.user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    mode: "0644"
+  loop: "{{ home_dirs }}"
+  loop_control:
+    label: "{{ item.user }}"
+
+- name: Register all plugins
+  ansible.builtin.command:
+    argv:
+      - "{{ nushell_binary_path }}/nu"
+      - --plugin-config "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ plugin_file }}"
+      - -c "{{ plugin_command }} {{ nushell_binary_path }}/{{ item[1] }}"
+  loop: "{{ home_dirs | product(nu_plugins) }}"
+  loop_control:
+    label: "{{ item[0].user }} {{ item[1] }}"
+  changed_when: false

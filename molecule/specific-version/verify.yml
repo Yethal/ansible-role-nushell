@@ -24,7 +24,7 @@
     - name: Get nushell version
       ansible.builtin.shell: # noqa command-instead-of-shell
         cmd: "version|get version"
-        executable: "{{ nushell_binary_path }}/nu"
+        executable: "/usr/local/bin/nu"
       register: version_to_check
       changed_when: false
 

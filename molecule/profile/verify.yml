@@ -23,7 +23,7 @@
     - name: Assert nu was added to .profile
       ansible.builtin.lineinfile:
         path: "/home/{{ item }}/.profile"
-        line: "{{ nushell_binary_path }}/nu -l"
+        line: "/usr/local/bin/nu -l"
         state: present
       check_mode: true
       register: profile

@@ -44,7 +44,7 @@
       loop: "{{ nu_users }}"
 
     - name: Run nushell command to check for config errors
-      ansible.builtin.command: "nu -n -c 'nu-check /home/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}'"
+      ansible.builtin.command: "/usr/local/bin/nu -n -c 'nu-check /home/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}'"
       changed_when: false
       register: check_output
       failed_when: check_output.stdout != 'true'

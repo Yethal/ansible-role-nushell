@@ -12,6 +12,6 @@ platforms:
   - name: instance
 provisioner:
   name: ansible
-  log: false
+  log: true
 verifier:
   name: ansible

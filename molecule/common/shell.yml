@@ -2,7 +2,7 @@
 - name: Assert nushell is not added to /etc/shells
   ansible.builtin.lineinfile:
     path: /etc/shells
-    line: "{{ nushell_binary_path }}/nu"
+    line: "/usr/local/bin/nu"
     state: absent
   check_mode: yes
   register: shells
@@ -18,7 +18,7 @@
 
 - name: Assert nushell is not set as default shell of the user
   ansible.builtin.assert:
-    that: item.shell != "{{ nushell_binary_path }}/nu"
+    that: item.shell != "/usr/local/bin/nu"
     quiet: true
   loop: "{{ user_stats.results }}"
   loop_control:

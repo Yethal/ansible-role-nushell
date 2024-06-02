@@ -1,18 +1,7 @@
 ---
-nushell_binary_path: /usr/local/bin
 nushell_config_path: "{{ 'Library/Application Support/nushell' if ansible_system == 'Darwin' else '.config/nushell' }}"
 releases_endpoint: https://api.github.com/repos/nushell/nushell/releases
+min_glibc_version: '2.29'
 arch_map:
   arm64: aarch64
   armhf: armv7
-package_map:
-  linux:
-    musl:
-      default: unknown-linux-musl
-      full: linux-musl-full
-    gnu:
-      default: unknown-linux-gnu
-      full: linux-gnu-full
-  darwin:
-    default: apple-darwin
-    full: darwin-full

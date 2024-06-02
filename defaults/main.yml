@@ -19,7 +19,7 @@ nu_plugins:
   - nu_plugin_inc
   - nu_plugin_query
   - nu_plugin_formats
-min_glibc_version: '2.29'
+  - nu_plugin_polars
 config_urls:
   - name: config.nu
     url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/default_config.nu"

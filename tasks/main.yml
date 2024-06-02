@@ -21,20 +21,13 @@
       register: installed
       changed_when: False
 
-    - name: Check installed nushell variant
-      ansible.builtin.command:
-        cmd: "{{ nushell_binary_path }}/nu -c 'version|get features'"
-      register: features
-      changed_when: false
-
     - name: Set installed nushell version and variant as fact
       ansible.builtin.set_fact:
         installed_version: "{{ installed.stdout }}"
-        installed_variant: "{{ 'full' if 'dataframe' in features.stdout else 'default' }}"
 
-- name: Install nushell version {{ _nushell_version + ' variant ' + nushell_variant }}
+- name: Install nushell version {{ _nushell_version }}
   ansible.builtin.include_tasks: install.yml
-  when: (not nushell_status.stat.exists) or (_nushell_version != installed_version) or (nushell_variant != installed_variant)
+  when: (not nushell_status.stat.exists) or (_nushell_version != installed_version)
   register: install_status
 
 - name: Install nushell configs

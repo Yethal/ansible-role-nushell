@@ -2,7 +2,7 @@
 - name: Get list of features
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: "version|get features"
-    executable: "{{ nushell_binary_path }}/nu"
+    executable: "/usr/local/bin/nu"
   become_user: "{{ item }}"
   become: true
   register: features

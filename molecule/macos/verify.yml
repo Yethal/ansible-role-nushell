@@ -27,7 +27,7 @@
 
     - name: Assert nushell is set as default shell of users
       ansible.builtin.assert:
-        that: item.shell == "{{ nushell_binary_path }}/nu"
+        that: item.shell == "/usr/local/bin/nu"
         quiet: true
       loop: "{{ user_stats.results }}"
       loop_control:
@@ -36,7 +36,7 @@
     - name: Assert nu was added to .zprofile
       ansible.builtin.lineinfile:
         path: "/home/{{ item }}/.zprofile"
-        line: "{{ nushell_binary_path }}/nu -l"
+        line: "/usr/local/bin/nu -l"
         state: present
       check_mode: true
       register: profile

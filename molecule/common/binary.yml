@@ -1,7 +1,7 @@
 ---
 - name: Get nushell install path
   ansible.builtin.stat:
-    path: "{{ nushell_binary_path }}/nu"
+    path: "/usr/local/bin/nu"
     get_attributes: false
     get_checksum: false
     get_mime: false

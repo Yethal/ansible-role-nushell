@@ -2,7 +2,7 @@
 - name: Assert nu was not added to .profile
   ansible.builtin.lineinfile:
     path: "/home/{{ item }}/.profile"
-    line: "{{ nushell_binary_path }}/nu -l"
+    line: "/usr/local/bin/nu -l"
     state: absent
   check_mode: true
   register: profile

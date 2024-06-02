@@ -2,7 +2,7 @@
 - name: Get list of registered plugins
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: "version|get installed_plugins|split row ','|str trim|to json"
-    executable: "{{ nushell_binary_path }}/nu"
+    executable: "/usr/local/bin/nu"
   become_user: "{{ item }}"
   become: true
   register: installed_plugins

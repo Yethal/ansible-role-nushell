@@ -133,7 +133,7 @@
   ansible.builtin.lineinfile:
     path: "{{ item.homedir }}/{{ nushell_config_path }}/env.nu"
     regexp: "^.*PROMPT_INDICATOR.*$"
-    line: "{{ '$env.' if '0.83.0' is version(_nushell_version, '<=') else 'let-env ' }}PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
+    line: "{{ '$env.' if _nushell_version is version('0.83.0', '>=') else 'let-env ' }}PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
     validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env'"
   when: add_hostname_to_prompt|bool
   loop: "{{ home_dirs }}"

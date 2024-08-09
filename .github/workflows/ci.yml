@@ -58,8 +58,8 @@ jobs:
         os:
           - ubuntu-latest
         distro:
-          - ubuntu2204
-          - centos8
+          - ubuntu2004
+          - ubuntu2404
         scenario: ${{ fromJson(needs.lint.outputs.tests) }}
         include:
           - os: macos-latest

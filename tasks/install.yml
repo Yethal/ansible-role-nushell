@@ -4,7 +4,7 @@
   block:
     - name: Get libc version
       ansible.builtin.shell:
-        cmd: "set -eu && ldd --version|grep ldd|cut -f4 -d ' '"
+        cmd: "set -eu && ldd --version|grep ldd|cut -f5 -d ' '"
         executable: /bin/sh
       register: libc
       changed_when: false

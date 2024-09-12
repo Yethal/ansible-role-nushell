@@ -11,6 +11,7 @@ install_plugins: true
 install_configs: remote
 overwrite_configs: false
 add_hostname_to_prompt: false
+nu_hostname: "{{ inventory_hostname }}"
 clear_login_file: false
 nu_plugins:
   - nu_plugin_custom_values

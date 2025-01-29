@@ -28,6 +28,7 @@ For more information about variables marked with an asterisk please read the Cav
 | disable_banner         | whether built-in nushell banner should be disabled              | false               |
 | nu_users               | List of users for which config and plugins should be registered | []                  |
 | add_hostname_to_prompt | Whether inventory hostname should be added to default prompt    | false               |
+| nu_hostname            | Hostname to add to prompt if `add_hostname_to_prompt` is true   | inventory_hostname  |
 | clear_login_file       | Whether login.nu should be cleared of all non-commented lines   | false               |
 
 ## Plugin installation

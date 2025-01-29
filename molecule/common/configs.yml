@@ -4,7 +4,6 @@
     config_urls:
       - name: config.nu
       - name: env.nu
-      - name: login.nu
 
 - name: Stat config files
   ansible.builtin.stat:

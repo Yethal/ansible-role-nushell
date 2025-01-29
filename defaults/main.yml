@@ -23,8 +23,6 @@ nu_plugins:
   - nu_plugin_polars
 config_urls:
   - name: config.nu
-    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/default_config.nu"
+    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/{{ 'default_files' if (_nushell_version is version('0.101.0', '>=')) else 'sample_config' }}/default_config.nu"
   - name: env.nu
-    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/default_env.nu"
-  - name: login.nu
-    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/sample_config/sample_login.nu"
+    url: "https://raw.githubusercontent.com/nushell/nushell/{{ _nushell_version }}/crates/nu-utils/src/{{ 'default_files' if (_nushell_version is version('0.101.0', '>=')) else 'sample_config' }}/default_env.nu"

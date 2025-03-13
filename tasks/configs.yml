@@ -60,6 +60,7 @@
   environment:
     XDG_CONFIG_HOME: /tmp
     HOME: /tmp
+  changed_when: false
   when:
     - install_configs == 'remote'
     - missing_configs|length > 0

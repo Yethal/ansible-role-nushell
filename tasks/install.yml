@@ -21,7 +21,7 @@
   ansible.builtin.unarchive:
     src: "https://github.com/nushell/nushell/releases/download/{{ _nushell_version }}/{{ nushell_package }}.tar.gz"
     dest: "/tmp"
-    remote_src: yes
+    remote_src: true
   notify:
     - Remove download directory
 
@@ -32,8 +32,8 @@
     dest: "{{ nushell_binary_path }}"
     owner: root
     group: root
-    mode: 0751
-    remote_src: yes
+    mode: "0751"
+    remote_src: true
 
 - name: Move nushell plugins to proper location
   become: true
@@ -42,8 +42,8 @@
     dest: "{{ nushell_binary_path }}"
     owner: root
     group: root
-    mode: 0751
-    remote_src: yes
+    mode: "0751"
+    remote_src: true
   loop: "{{ nu_plugins }}"
   loop_control:
     label: "{{ item }}"

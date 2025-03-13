@@ -1,56 +1,39 @@
 ---
-- name: Gather users home_dirs (Linux)
-  when: ansible_system == 'Linux'
+- name: Gather users home_dirs
   block:
-    - name: Query homedirs (Linux)
+    - name: Query homedirs
       ansible.builtin.getent:
         database: passwd
 
-    - name: Query primary groups (Linux)
+    - name: Query primary groups
       ansible.builtin.getent:
         database: group
         split: ':'
 
-    - name: Set facts (Linux)
+    - name: Set facts
       ansible.builtin.set_fact:
         home_dirs: >
-          {{
-            nu_users
-            | zip(nu_users | map('extract', ansible_facts.getent_passwd, 4))
-            | community.general.dict
-            | dict2items(key_name='user', value_name='homedir')
-          }}
-        user_groups: >
-          {{
-            ansible_facts.getent_group.keys()
-            | zip(ansible_facts.getent_group | dict2items | map(attribute='value.1'))
-            | map('reverse')
-            | community.general.dict
-          }}
-
-- name: Gather users home_dirs (macOS)
-  when: ansible_system == 'Darwin'
-  block:
-    - name: Query homedirs (macOS)
-      ansible.builtin.shell: # noqa command-instead-of-shell
-        cmd: "set -euo pipefail && dscl . -read /Users/{{ item }} NFSHomeDirectory | cut -f2 -d ':' | tr -d '[:space:]'"
-      loop: "{{ nu_users }}"
-      register: dscl
-      changed_when: false
-
-    - name: Set facts (macOS)
-      ansible.builtin.set_fact:
-        home_dirs: "{{ nu_users | zip(dscl.results | map(attribute='stdout')) | community.general.dict | dict2items(key_name='user', value_name='homedir') }}"
+          {%- set home_dirs = [] -%}
+          {%- for user in nu_users -%}
+            {{
+              home_dirs.append({
+                'user': user,
+                'group': ansible_facts.getent_passwd[user][1],
+                'homedir': ansible_facts.getent_passwd[user][4]
+              })
+            }}
+          {%- endfor -%}
+          {{ home_dirs }}
 
 - name: Stat existing config files
   ansible.builtin.stat:
-    path: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
+    path: "{{ item.homedir }}/{{ nushell_config_path }}/config.nu"
     get_attributes: false
     get_checksum: false
     get_mime: false
-  loop: "{{ home_dirs | product(config_urls | map(attribute='name')) }}"
+  loop: "{{ home_dirs }}"
   loop_control:
-    label: "{{ item[0].homedir }}/{{ nushell_config_path }}/{{ item[1] }}"
+    label: "{{ item.homedir }}/{{ nushell_config_path }}/config.nu"
   register: config
 
 - name: Set missing configs as fact
@@ -59,24 +42,24 @@
 
 - name: Copy local configs to user directory
   ansible.builtin.copy:
-    src: "{{ config_path | default('playbook_dir', true) }}/{{ item.invocation.module_args.path | basename }}"
-    dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
+    src: "{{ config_path | default('playbook_dir', true) }}/config.nu"
+    dest: "{{ item.item.homedir }}/{{ nushell_config_path }}/"
     mode: "0644"
-    owner: "{{ item.item[0].user }}"
-    group: "{{ user_groups[ansible_facts.getent_passwd[item.item[0].user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    owner: "{{ item.item.user }}"
+    group: "{{ item.item.group }}"
   loop: "{{ missing_configs }}"
   loop_control:
-    label: "{{ item.invocation.module_args.path }}"
+    label: "{{ item.item.user }}"
   when: install_configs == 'local'
 
-- name: Download remote configs
-  ansible.builtin.get_url:
-    url: "{{ item.url }}"
-    dest: "/tmp/{{ item.name }}"
-    mode: "0750"
-  loop: "{{ config_urls }}"
-  loop_control:
-    label: "{{ item.name }}"
+- name: Generate preset configs
+  ansible.builtin.command:
+    argv:
+      - "{{ nushell_binary_path }}/nu"
+      - -l -c "config reset --nu --without-backup"
+  environment:
+    XDG_CONFIG_HOME: /tmp
+    HOME: /tmp
   when:
     - install_configs == 'remote'
     - missing_configs|length > 0
@@ -85,15 +68,15 @@
 
 - name: Copy remote configs
   ansible.builtin.copy:
-    src: "/tmp/{{ item.invocation.module_args.path | basename }}"
-    dest: "{{ item.item[0].homedir }}/{{ nushell_config_path }}/"
-    owner: "{{ item.item[0].user }}"
-    group: "{{ user_groups[ansible_facts.getent_passwd[item.item[0].user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    src: "/tmp/nushell/config.nu"
+    dest: "{{ item.item.homedir }}/{{ nushell_config_path }}/"
+    owner: "{{ item.item.user }}"
+    group: "{{ item.item.group }}"
     mode: "0644"
     remote_src: true
   loop: "{{ missing_configs }}"
   loop_control:
-    label: "{{ item.invocation.module_args.path }}"
+    label: "{{ item.item.user }} config.nu"
   when:
     - install_configs == 'remote'
     - missing_configs|length > 0
@@ -104,11 +87,11 @@
 
 - name: Add nushell to .profile
   ansible.builtin.lineinfile:
-    path: "{{ item.homedir }}/{{ '.profile' if ansible_system == 'Linux' else '.zprofile' }}"
+    path: "{{ item.homedir }}/.profile"
     state: present
     line: "{{ nushell_binary_path }}/nu -l"
     owner: "{{ item.user }}"
-    group: "{{ user_groups[ansible_facts.getent_passwd[item.user][2]] if ansible_system == 'Linux' else 'staff' }}"
+    group: "{{ item.group }}"
     mode: "0750"
     create: true
   when: add_to_profile|bool
@@ -121,8 +104,8 @@
     path: "{{ item.homedir }}/{{ nushell_config_path }}/config.nu"
     state: present
     backrefs: true
-    regexp: '^(\s*)show_banner: (true|false)(.*)$'
-    line: '\1show_banner: false\3'
+    regexp: '^(\s*)$env.config.show_banner = (true|false)(.*)$'
+    line: '\1s$env.config.show_banner =  false\3'
     validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env.config'"
   when: disable_banner|bool
   loop: "{{ home_dirs }}"
@@ -131,22 +114,11 @@
 
 - name: Add hostname to nushell prompt
   ansible.builtin.lineinfile:
-    path: "{{ item.homedir }}/{{ nushell_config_path }}/env.nu"
+    path: "{{ item.homedir }}/{{ nushell_config_path }}/config.nu"
     regexp: "^.*PROMPT_INDICATOR.*$"
-    line: "{{ '$env.' if _nushell_version is version('0.83.0', '>=') else 'let-env ' }}PROMPT_INDICATOR = '({{ nu_hostname }})〉'"
+    line: "$env.PROMPT_INDICATOR = '({{ nu_hostname }})〉'"
     validate: "{{ nushell_binary_path }}/nu -n -c 'source %s; $env'"
   when: add_hostname_to_prompt|bool
-  loop: "{{ home_dirs }}"
-  loop_control:
-    label: "{{ item.user }}"
-
-- name: Clean up login.nu
-  ansible.builtin.lineinfile:
-    path: "{{ item.homedir }}/{{ nushell_config_path }}/login.nu"
-    regexp: "^(?!#).*"
-    state: absent
-    validate: "{{ nushell_binary_path }}/nu -n -c 'source %s'"
-  when: clear_login_file|bool
   loop: "{{ home_dirs }}"
   loop_control:
     label: "{{ item.user }}"

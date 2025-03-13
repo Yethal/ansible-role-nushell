@@ -13,11 +13,6 @@
       ansible.builtin.set_fact:
         libc_flavor: "{{ 'gnu' if libc.stdout is version(min_glibc_version, '>=') else 'musl' }}"
 
-
-- name: Set package variant as fact
-  ansible.builtin.set_fact:
-    nu_plugins: "{{ nu_plugins if (_nushell_version is version('0.93.0', '>=')) else (nu_plugins | difference(['nu_plugin_polars'])) }}"
-
 - name: Set package name as fact
   ansible.builtin.set_fact:
     nushell_package: "nu-{{ _nushell_version }}-{{ arch_map[ansible_architecture] | default(ansible_architecture) }}-{{ 'unknown-linux-' + libc_flavor if ansible_system == 'Linux' else 'apple-darwin' }}"
@@ -36,7 +31,7 @@
     src: "/tmp/{{ nushell_package }}/nu"
     dest: "{{ nushell_binary_path }}"
     owner: root
-    group: "{{ 'root' if ansible_system == 'Linux' else 'wheel' }}"
+    group: root
     mode: 0751
     remote_src: yes
 
@@ -46,7 +41,7 @@
     src: "/tmp/{{ nushell_package }}/{{ item }}"
     dest: "{{ nushell_binary_path }}"
     owner: root
-    group: "{{ 'root' if ansible_system == 'Linux' else 'wheel' }}"
+    group: root
     mode: 0751
     remote_src: yes
   loop: "{{ nu_plugins }}"

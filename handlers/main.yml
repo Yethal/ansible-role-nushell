@@ -1,11 +1,8 @@
 ---
 - name: Remove temp configs
   ansible.builtin.file:
-    path: "/tmp/{{ item.name }}"
+    path: "/tmp/nushell"
     state: absent
-  loop: "{{ config_urls }}"
-  loop_control:
-    label: "{{ item.name }}"
 
 - name: Remove download directory
   ansible.builtin.file:

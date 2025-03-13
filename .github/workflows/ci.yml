@@ -46,24 +46,19 @@ jobs:
 
       - name: Generate test list
         id: tests-list
-        run: echo "tests=$(ls molecule | grep -v "common\|macos" | jq -sRc 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "tests=$(ls molecule | grep -v "common" | jq -sRc 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
   molecule:
     name: Molecule
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     needs: lint
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
         distro:
           - ubuntu2004
           - ubuntu2404
         scenario: ${{ fromJson(needs.lint.outputs.tests) }}
-        include:
-          - os: macos-latest
-            scenario: macos
 
     steps:
       - name: Checkout code

@@ -24,9 +24,8 @@
       ansible.builtin.lineinfile:
         path: "/home/{{ item }}/{{ nushell_config_path }}/config.nu"
         state: present
-        backrefs: true
-        regexp: '^(\s*)show_banner: (true|false)(.*)$'
-        line: '\1show_banner: false\3'
+        regexp: "^\\$env\\.config\\.show_banner = (true|false)\\s*$"
+        line: "$env.config.show_banner = false"
       check_mode: true
       register: banner
       failed_when: banner is changed

@@ -19,7 +19,7 @@
       ansible.builtin.command:
         cmd: "{{ nushell_binary_path }}/nu --version"
       register: installed
-      changed_when: False
+      changed_when: false
 
     - name: Set installed nushell version and variant as fact
       ansible.builtin.set_fact:

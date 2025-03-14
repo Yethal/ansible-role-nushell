@@ -1,12 +1,10 @@
 ---
 - name: Assert banner is not disabled
   ansible.builtin.lineinfile:
-    path: "/home/{{ item }}/.config/nushell/config.nu"
-    state: present
-    backrefs: true
-    regexp: '^(\s*)show_banner: (true|false)(.*)$'
-    line: '\1show_banner: true\3'
-  check_mode: yes
+    path: "/home/{{ item }}/{{ nushell_config_path }}/config.nu"
+    state: absent
+    regexp: "^\\$env\\.config\\.show_banner = (true|false)\\s*$"
+  check_mode: true
   register: banner
   failed_when: banner is changed
   loop: "{{ nu_users }}"

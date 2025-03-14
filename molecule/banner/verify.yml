@@ -24,9 +24,8 @@
       ansible.builtin.lineinfile:
         path: "/home/{{ item }}/{{ nushell_config_path }}/config.nu"
         state: present
-        backrefs: true
-        regexp: '^(\s*)show_banner: (true|false)(.*)$'
-        line: '\1show_banner: false\3'
+        regexp: "^\\$env\\.config\\.show_banner = (true|false)\\s*$"
+        line: "$env.config.show_banner = false"
       check_mode: true
       register: banner
       failed_when: banner is changed
@@ -34,7 +33,7 @@
 
     - name: Assert hostname was added to prompt
       ansible.builtin.lineinfile:
-        path: "/home/{{ item }}/{{ nushell_config_path }}/env.nu"
+        path: "/home/{{ item }}/{{ nushell_config_path }}/config.nu"
         state: present
         regexp: "^.*PROMPT_INDICATOR.*$"
         line: "$env.PROMPT_INDICATOR = '({{ inventory_hostname }})〉'"
@@ -44,10 +43,14 @@
       loop: "{{ nu_users }}"
 
     - name: Run nushell command to check for config errors
-      ansible.builtin.command: "/usr/local/bin/nu -n -c 'nu-check /home/{{ item[0] }}/{{ nushell_config_path }}/{{ item[1] }}'"
+      ansible.builtin.command:
+        argv:
+          - /usr/local/bin/nu
+          - --no-config-file
+          - --no-history
+          - --commands
+          - 'nu-check --debug /home/{{ item }}/{{ nushell_config_path }}/config.nu'
       changed_when: false
       register: check_output
       failed_when: check_output.stdout != 'true'
-      loop: "{{ nu_users|product(['config.nu', 'env.nu']) }}"
-      loop_control:
-        label: "{{ item[0] }} - {{ item[1] }}"
+      loop: "{{ nu_users }}"

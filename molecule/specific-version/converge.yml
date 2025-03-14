@@ -2,7 +2,7 @@
 - name: Converge
   hosts: all
   vars:
-    nushell_version: 0.87.0
+    nushell_version: 0.101.0
     nu_plugins:
       - nu_plugin_example
       - nu_plugin_gstat

@@ -9,12 +9,7 @@ name: CI
     branches:
       - main
 
-defaults:
-  run:
-    working-directory: "yethal.nushell"
-
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
 
 jobs:
@@ -26,8 +21,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          path: "yethal.nushell"
 
       - name: Set up Python 3.
         uses: actions/setup-python@v5
@@ -60,8 +53,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          path: "yethal.nushell"
 
       - name: Set up Python 3.
         uses: actions/setup-python@v5
@@ -72,8 +63,9 @@ jobs:
         run: pip3 install -r requirements.txt
 
       - name: Run ${{ matrix.scenario }} test
-        run: molecule test -s ${{ matrix.scenario }}
+        run: molecule test -s $MOLECULE_SCENARIO
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_SCENARIO: ${{ matrix.scenario }}

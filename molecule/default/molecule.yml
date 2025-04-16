@@ -21,8 +21,8 @@ provisioner:
   log: true
   playbooks:
     prepare: ../common/prepare.yml
-  config_options:
-    defaults:
-      roles_path: ${MOLECULE_PROJECT_DIRECTORY}/..:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+  # config_options:
+  #   defaults:
+  #     roles_path: ${MOLECULE_PROJECT_DIRECTORY}/..:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
 verifier:
   name: ansible

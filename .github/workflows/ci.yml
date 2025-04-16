@@ -9,9 +9,6 @@ name: CI
     branches:
       - main
 
-env:
-  OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
-
 jobs:
   lint:
     name: Lint

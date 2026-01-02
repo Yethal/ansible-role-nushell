@@ -7,7 +7,7 @@
   tasks:
     - name: Set name of sudo group as fact
       ansible.builtin.set_fact:
-        sudo_group: "{{ 'sudo' if ansible_os_family == 'Debian' else 'wheel' }}"
+        sudo_group: "{{ 'sudo' if ansible_facts['os_family'] == 'Debian' else 'wheel' }}"
 
     - name: Create group {{ sudo_group }}
       ansible.builtin.group:

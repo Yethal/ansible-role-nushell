@@ -56,7 +56,9 @@
   ansible.builtin.command:
     argv:
       - "{{ nushell_binary_path }}/nu"
-      - -l -c "config reset --nu --without-backup"
+      - "-l"
+      - "-c"
+      - "config reset --nu --without-backup"
   environment:
     XDG_CONFIG_HOME: /tmp
     HOME: /tmp

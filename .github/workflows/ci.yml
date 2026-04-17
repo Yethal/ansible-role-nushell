@@ -43,8 +43,8 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - ubuntu2004
           - ubuntu2404
+          - ubuntu2604
         scenario: ${{ fromJson(needs.lint.outputs.tests) }}
 
     steps:

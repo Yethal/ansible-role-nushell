@@ -26,7 +26,7 @@
       ansible.builtin.user:
         state: present
         name: "{{ item }}"
-        group: "{{ sudo_group }}"
+        groups: "{{ sudo_group }}"
         shell: /bin/bash
         append: true
       loop: "{{ nu_users }}"
